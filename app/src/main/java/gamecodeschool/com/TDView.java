@@ -1,15 +1,29 @@
 package gamecodeschool.com;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 public class TDView extends SurfaceView implements Runnable {
 
     volatile boolean playing;
     Thread gameThread = null;
+    //game object
+    private PlayerShip player;
+    //for drawing
+    private Paint paint;
+    private Canvas canvas;
+    private SurfaceHolder holder;
 
     public TDView(Context context) {
         super(context);
+        //initialize player ship
+        player = new PlayerShip(context);
+        //initialize drawing objects
+        holder = getHolder();
+        paint = new Paint();
     }
 
 

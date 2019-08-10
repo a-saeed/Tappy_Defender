@@ -11,6 +11,12 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        //create an instance of Tappy defender view(TDView)
+        //passing "this" as the context of our app
+        gameView = new TDView(this);
+
+        //make gameView the view for this activity
+        setContentView(gameView);
     }
 
     //if activity is paused , pause the thread
