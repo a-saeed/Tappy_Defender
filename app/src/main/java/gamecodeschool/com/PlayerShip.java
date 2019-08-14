@@ -8,7 +8,7 @@ public class PlayerShip {
 
     private Bitmap bitmap;
     private int x , y ;
-    private int speed = 0;
+    private int speed ;
     private boolean boosting;
 
     private final int GRAVITY = -12;
@@ -20,7 +20,7 @@ public class PlayerShip {
     private final int MAX_SPEED = 20;
 
 
-    public PlayerShip(Context context)
+    public PlayerShip(Context context , int screenX , int screenY)
     {
         x = 50;
         y = 50;
@@ -28,6 +28,9 @@ public class PlayerShip {
         bitmap = BitmapFactory.decodeResource(context.getResources() , R.drawable.ship);
         //initially the ship is not boosting
         boosting=false;
+        //initialize max and min y
+        minY = 0;
+        maxY = screenY - bitmap.getHeight();
     }
 
     public Bitmap getBitmap() {
@@ -50,7 +53,7 @@ public class PlayerShip {
         //are we boosting ?
         if (boosting)
             //speed up
-            speed += 2;
+            speed += 3;
         else
             //slow down
             speed -= 5;

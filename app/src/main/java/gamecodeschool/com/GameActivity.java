@@ -1,6 +1,8 @@
 package gamecodeschool.com;
 
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,9 +13,19 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        /**getting screen details information */
+        //get a display object to access the screen details.
+        Display display = getWindowManager().getDefaultDisplay();
+        //load the resolution into a point object
+        Point size = new Point();
+        display.getSize(size);
+
+        /**setting the view */
         //create an instance of Tappy defender view(TDView)
         //passing "this" as the context of our app
-        gameView = new TDView(this);
+        //also passing the screen resolution to the constructor
+        gameView = new TDView(this , size.x , size.y);
 
         //make gameView the view for this activity
         setContentView(gameView);

@@ -19,10 +19,10 @@ public class TDView extends SurfaceView implements Runnable {
     private Canvas canvas;
     private SurfaceHolder holder;
 
-    public TDView(Context context) {
+    public TDView(Context context , int x , int y) {
         super(context);
         //initialize player ship
-        player = new PlayerShip(context);
+        player = new PlayerShip(context , x , y);
         //initialize drawing objects
         holder = getHolder();
         paint = new Paint();
@@ -72,7 +72,7 @@ public class TDView extends SurfaceView implements Runnable {
             //first we lock the area of memory we will be drawing to
             canvas = holder.lockCanvas();
             //rub out the last frame (clear the screen)
-            canvas.drawColor(Color.argb(255 , 100 , 50 , 10));
+            canvas.drawColor(Color.argb(255 , 50 , 50 , 50));
             //draw the player
             canvas.drawBitmap(player.getBitmap() , player.getX() , player.getY() , paint);
             //unlock and draw the scene
@@ -101,13 +101,13 @@ public class TDView extends SurfaceView implements Runnable {
             //has the player lifted their finger up?
             case MotionEvent.ACTION_UP:
                 //do some
-                player.setBoosting();
+                player.stopBoosting();
                 break;
 
                 //has the player touched the screen?
             case MotionEvent.ACTION_DOWN:
                 //do some
-                player.stopBoosting();
+                player.setBoosting();
                 break;
         }
 
