@@ -17,4 +17,24 @@ public class PlayerShip {
         speed = 1;
         bitmap = BitmapFactory.decodeResource(context.getResources() , R.drawable.ship);
     }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void update() {
+        x+=5;
+    }
 }
