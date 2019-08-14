@@ -9,6 +9,7 @@ public class PlayerShip {
     private Bitmap bitmap;
     private int x , y ;
     private int speed = 0;
+    private boolean boosting;
 
     public PlayerShip(Context context)
     {
@@ -16,6 +17,8 @@ public class PlayerShip {
         y = 50;
         speed = 1;
         bitmap = BitmapFactory.decodeResource(context.getResources() , R.drawable.ship);
+        //initially the ship is not boosting
+        boosting=false;
     }
 
     public Bitmap getBitmap() {
@@ -37,4 +40,8 @@ public class PlayerShip {
     public void update() {
         x+=5;
     }
+
+    public void setBoosting() {boosting = true;}
+
+    public void stopBoosting() {boosting = false;}
 }

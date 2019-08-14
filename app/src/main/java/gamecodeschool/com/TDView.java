@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -87,6 +88,30 @@ public class TDView extends SurfaceView implements Runnable {
         {
 
         }
+    }
+
+    //surfaceView allows us to handle the onTouchEvent
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent)
+    {
+        //there are many different events in MotionEvent
+        //we care about just 2 - for now
+        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK)
+        {
+            //has the player lifted their finger up?
+            case MotionEvent.ACTION_UP:
+                //do some
+                player.setBoosting();
+                break;
+
+                //has the player touched the screen?
+            case MotionEvent.ACTION_DOWN:
+                //do some
+                player.stopBoosting();
+                break;
+        }
+
+        return true;
     }
 }
 
