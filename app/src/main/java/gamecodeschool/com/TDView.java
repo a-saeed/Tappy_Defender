@@ -12,8 +12,13 @@ public class TDView extends SurfaceView implements Runnable {
 
     volatile boolean playing;
     Thread gameThread = null;
-    //game object
+
+    //game objects
     private PlayerShip player;
+    private EnemyShip enemy1;
+    private EnemyShip enemy2;
+    private EnemyShip enemy3;
+
     //for drawing
     private Paint paint;
     private Canvas canvas;
@@ -21,8 +26,13 @@ public class TDView extends SurfaceView implements Runnable {
 
     public TDView(Context context , int x , int y) {
         super(context);
+
         //initialize player ship
         player = new PlayerShip(context , x , y);
+        enemy1 = new EnemyShip(context , x ,y);
+        enemy2 = new EnemyShip(context , x ,y);
+        enemy3 = new EnemyShip(context , x ,y);
+
         //initialize drawing objects
         holder = getHolder();
         paint = new Paint();
@@ -62,7 +72,14 @@ public class TDView extends SurfaceView implements Runnable {
 
     private void update()
     {
+        //update the player
         player.update();
+
+        //update the enemy
+        enemy1.update(player.getSpeed());
+        enemy2.update(player.getSpeed());
+        enemy3.update(player.getSpeed());
+
     }
 
     private void draw()
@@ -71,10 +88,16 @@ public class TDView extends SurfaceView implements Runnable {
         {
             //first we lock the area of memory we will be drawing to
             canvas = holder.lockCanvas();
+
             //rub out the last frame (clear the screen)
             canvas.drawColor(Color.argb(255 , 50 , 50 , 50));
+
             //draw the player
             canvas.drawBitmap(player.getBitmap() , player.getX() , player.getY() , paint);
+            canvas.drawBitmap(enemy1.getBitmap() , enemy1.getX() , enemy1.getY() , paint);
+            canvas.drawBitmap(enemy2.getBitmap() , enemy1.getX() , enemy1.getY() , paint);
+            canvas.drawBitmap(enemy3.getBitmap() , enemy1.getX() , enemy1.getY() , paint);
+
             //unlock and draw the scene
             holder.unlockCanvasAndPost(canvas);
         }
