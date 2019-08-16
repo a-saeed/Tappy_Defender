@@ -8,6 +8,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
+
 public class TDView extends SurfaceView implements Runnable {
 
     volatile boolean playing;
@@ -18,6 +20,7 @@ public class TDView extends SurfaceView implements Runnable {
     private EnemyShip enemy1;
     private EnemyShip enemy2;
     private EnemyShip enemy3;
+    public ArrayList<SpaceDust> dustList = new ArrayList<SpaceDust>();
 
     //for drawing
     private Paint paint;
@@ -36,6 +39,16 @@ public class TDView extends SurfaceView implements Runnable {
         //initialize drawing objects
         holder = getHolder();
         paint = new Paint();
+
+        //initialize SpaceDust
+        int numSpecs = 500;
+
+        for (int i =0 ; i<numSpecs ; i++ )
+        {
+            //where will the dust spawn?
+            SpaceDust spec = new SpaceDust(x , y);
+            dustList.add(spec);
+        }
     }
 
 
@@ -80,6 +93,12 @@ public class TDView extends SurfaceView implements Runnable {
         enemy2.update(player.getSpeed());
         enemy3.update(player.getSpeed());
 
+        //update the space dust
+        for (SpaceDust spec : dustList)
+        {
+            spec.update(player.getSpeed());
+        }
+
     }
 
     private void draw()
@@ -90,13 +109,20 @@ public class TDView extends SurfaceView implements Runnable {
             canvas = holder.lockCanvas();
 
             //rub out the last frame (clear the screen)
-            canvas.drawColor(Color.argb(255 , 50 , 50 , 50));
+            canvas.drawColor(Color.argb(255 , 20 , 20 , 35));
+
+            //draw white specs of dust
+            paint.setColor(Color.argb(255 , 255 , 255 , 255));
+            for (SpaceDust spec : dustList)
+            {
+                canvas.drawPoint(spec.getX() , spec.getY() , paint);
+            }
 
             //draw the player
             canvas.drawBitmap(player.getBitmap() , player.getX() , player.getY() , paint);
             canvas.drawBitmap(enemy1.getBitmap() , enemy1.getX() , enemy1.getY() , paint);
-            canvas.drawBitmap(enemy2.getBitmap() , enemy1.getX() , enemy1.getY() , paint);
-            canvas.drawBitmap(enemy3.getBitmap() , enemy1.getX() , enemy1.getY() , paint);
+            canvas.drawBitmap(enemy2.getBitmap() , enemy2.getX() , enemy2.getY() , paint);
+            canvas.drawBitmap(enemy3.getBitmap() , enemy3.getX() , enemy3.getY() , paint);
 
             //unlock and draw the scene
             holder.unlockCanvasAndPost(canvas);
