@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -85,6 +86,19 @@ public class TDView extends SurfaceView implements Runnable {
 
     private void update()
     {
+        //collision detection on new positions
+        //if an enemy ship hits the player
+        //instantly transport enemy to a location off of the left of screen
+        //EnemyShip class takes care of the rest by re-spawning the enemy.
+        if (Rect.intersects(player.getHitBox() , enemy1.getHitBox()))
+            enemy1.setX(-100);
+
+        if (Rect.intersects(player.getHitBox() , enemy2.getHitBox()))
+            enemy2.setX(-100);
+
+        if (Rect.intersects(player.getHitBox() , enemy3.getHitBox()))
+            enemy3.setX(-100);
+
         //update the player
         player.update();
 
@@ -110,6 +124,35 @@ public class TDView extends SurfaceView implements Runnable {
 
             //rub out the last frame (clear the screen)
             canvas.drawColor(Color.argb(255 , 20 , 20 , 35));
+
+            //for debugging
+            //draw a rectangle around ships to visualize hit boxes
+            //switch to white pixels
+            paint.setColor(Color.argb(255 , 255 , 255 , 255));
+
+            canvas.drawRect(player.getHitBox().left ,
+                    player.getHitBox().top ,
+                    player.getHitBox().right ,
+                    player.getHitBox().bottom ,
+                    paint);
+
+            canvas.drawRect(enemy1.getHitBox().left ,
+                    enemy1.getHitBox().top ,
+                    enemy1.getHitBox().right ,
+                    enemy1.getHitBox().bottom ,
+                    paint);
+
+            canvas.drawRect(enemy2.getHitBox().left ,
+                    enemy2.getHitBox().top ,
+                    enemy2.getHitBox().right ,
+                    enemy2.getHitBox().bottom ,
+                    paint);
+
+            canvas.drawRect(enemy3.getHitBox().left ,
+                    enemy3.getHitBox().top ,
+                    enemy3.getHitBox().right ,
+                    enemy3.getHitBox().bottom ,
+                    paint);
 
             //draw white specs of dust
             paint.setColor(Color.argb(255 , 255 , 255 , 255));
