@@ -108,4 +108,9 @@ public class PlayerShip {
     public void setBoosting() {boosting = true;}
 
     public void stopBoosting() {boosting = false;}
+
+    public void reduceShieldStrength()
+    {
+        shieldStrength-- ;
+    }
 }
