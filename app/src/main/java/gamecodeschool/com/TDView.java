@@ -28,6 +28,14 @@ public class TDView extends SurfaceView implements Runnable {
     private Canvas canvas;
     private SurfaceHolder holder;
 
+    //in-game info (HUD)
+    private float distanceRemaining;
+    private long timeTaken;
+    private long timeStarted;
+    private long fastestTime;
+    private int screenX;
+    private int screenY;
+
     public TDView(Context context , int x , int y) {
         super(context);
 
@@ -40,6 +48,8 @@ public class TDView extends SurfaceView implements Runnable {
         //initialize drawing objects
         holder = getHolder();
         paint = new Paint();
+        screenX = x;
+        screenY = y;
 
         //initialize SpaceDust
         int numSpecs = 500;
@@ -155,17 +165,37 @@ public class TDView extends SurfaceView implements Runnable {
                     paint);
 
             //draw white specs of dust
-            paint.setColor(Color.argb(255 , 255 , 255 , 255));
             for (SpaceDust spec : dustList)
             {
                 canvas.drawPoint(spec.getX() , spec.getY() , paint);
             }
 
-            //draw the player
+            //draw the player & enemy ships
             canvas.drawBitmap(player.getBitmap() , player.getX() , player.getY() , paint);
             canvas.drawBitmap(enemy1.getBitmap() , enemy1.getX() , enemy1.getY() , paint);
             canvas.drawBitmap(enemy2.getBitmap() , enemy2.getX() , enemy2.getY() , paint);
             canvas.drawBitmap(enemy3.getBitmap() , enemy3.getX() , enemy3.getY() , paint);
+
+            //displaying the HUD
+            paint.setTextAlign(Paint.Align.LEFT);
+            paint.setColor(Color.argb(255 , 255 , 255 , 255));
+            paint.setTextSize(25);
+
+            canvas.drawText("Fastest:" + fastestTime + "s" , 10 , 20 , paint);
+            canvas.drawText("Time:" + timeTaken + "s" , screenX / 2 ,20 , paint);
+
+            canvas.drawText("Distance:" +
+                    distanceRemaining / 1000 + "KM" ,
+                    screenX / 3 ,screenY - 20 , paint);
+
+            canvas.drawText("Shield:" +
+                    player.getShieldStrength() ,
+                    10 , screenY-20 , paint );
+
+            canvas.drawText("Speed:" +
+                    player.getSpeed() * 60 +
+                    "MPS" , (screenX / 3) * 2 , screenY - 20, paint );
+
 
             //unlock and draw the scene
             holder.unlockCanvasAndPost(canvas);

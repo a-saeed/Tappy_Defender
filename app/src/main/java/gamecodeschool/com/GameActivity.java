@@ -3,6 +3,7 @@ package gamecodeschool.com;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,6 +30,10 @@ public class GameActivity extends AppCompatActivity {
 
         //make gameView the view for this activity
         setContentView(gameView);
+
+        // Hide the status bar and other OS-level chrome
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
     }
 
     //if activity is paused , pause the thread

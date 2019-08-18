@@ -7,6 +7,7 @@ import android.graphics.Rect;
 
 public class PlayerShip {
 
+    public int shieldStrength;
     private Bitmap bitmap;
     private int x , y ;
     private int speed ;
@@ -32,6 +33,7 @@ public class PlayerShip {
         y = 50;
         speed = 1;
         bitmap = BitmapFactory.decodeResource(context.getResources() , R.drawable.ship);
+        shieldStrength = 2;
 
         //initially the ship is not boosting
         boosting=false;
@@ -62,6 +64,10 @@ public class PlayerShip {
 
     public Rect getHitBox() {
         return hitBox;
+    }
+
+    public int getShieldStrength() {
+        return shieldStrength;
     }
 
     public void update() {
