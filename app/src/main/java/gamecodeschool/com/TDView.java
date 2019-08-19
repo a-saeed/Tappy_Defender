@@ -1,14 +1,20 @@
 package gamecodeschool.com;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class TDView extends SurfaceView implements Runnable {
@@ -38,7 +44,14 @@ public class TDView extends SurfaceView implements Runnable {
     private int screenX;
     private int screenY;
 
-    public TDView(Context context , int x , int y) {
+    //in-game sound effects
+    private SoundPool soundPool;
+    int start = -1;
+    int bump = -1;
+    int destroyed = -1;
+    int win = -1;
+
+    public TDView(final Context context , int x , int y) {
         super(context);
         this.context = context;
 
@@ -47,6 +60,33 @@ public class TDView extends SurfaceView implements Runnable {
         paint = new Paint();
         screenX = x;
         screenY = y;
+
+        //initializing sounds
+        //this SoundPool is deprecated
+        soundPool = new SoundPool(10 , AudioManager.STREAM_MUSIC , 0);
+
+        try {
+            //create objects for the 2 required classes
+            AssetManager assetManager = context.getAssets();
+            AssetFileDescriptor descriptor;
+
+            //create our FX in memory ready for use
+            descriptor = assetManager.openFd("start.ogg");
+            start = soundPool.load(descriptor , 0);
+
+            descriptor = assetManager.openFd("win.ogg");
+            win = soundPool.load(descriptor , 0);
+
+            descriptor = assetManager.openFd("destroyed.ogg");
+            destroyed = soundPool.load(descriptor , 0);
+
+            descriptor = assetManager.openFd("bump.ogg");
+            bump = soundPool.load(descriptor , 0);
+
+        } catch (IOException e)
+        {
+            Log.e("error" , "failed to load sound files") ;
+        }
 
         startGame();
     }
@@ -108,10 +148,12 @@ public class TDView extends SurfaceView implements Runnable {
 
         if (hitDetected)
         {
+            soundPool.play(bump , 1 , 1 , 0 , 0 , 1);
             player.reduceShieldStrength();
             if (player.shieldStrength < 0) {
                 //game over so do something
                 gameEnded = true;
+                soundPool.play(destroyed , 10 , 10 , 0 , 0 , 1);
             }
         }
 
@@ -142,8 +184,9 @@ public class TDView extends SurfaceView implements Runnable {
         //completed the game
         if (distanceRemaining < 0)
         {
+            soundPool.play(win , 1 , 1 , 0 , 0 , 1);
             //if its the first trial
-            if (fastestTime == 0)
+            if (fastestTime == 0.0)
                 fastestTime = timeTaken;
 
             //check for new fastest time
@@ -289,6 +332,8 @@ public class TDView extends SurfaceView implements Runnable {
         timeStarted = System.currentTimeMillis();
 
         gameEnded = false;
+
+        soundPool.play(start , 1 , 1 , 0 , 0 ,1);
     }
 
     public void playingHUD()
