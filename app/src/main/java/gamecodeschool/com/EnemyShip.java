@@ -25,13 +25,29 @@ public class EnemyShip {
 
     public EnemyShip(Context context , int screenX , int screenY)
     {
-        bitmap = BitmapFactory.decodeResource(context.getResources() , R.drawable.enemy);
+        Random generator = new Random();
+
+        //which enemy ship to appear on screen
+        int whichBitmap = generator.nextInt(3);
+        switch (whichBitmap) {
+            case 0:
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.enemy);
+                break;
+
+            case 1:
+                bitmap = BitmapFactory.decodeResource(context.getResources() , R.drawable.enemy1);
+                break;
+
+            case 2:
+                bitmap = BitmapFactory.decodeResource(context.getResources() , R.drawable.enemy2);
+                break;
+
+        }
         maxX = screenX;
         maxY = screenY;
         minX = 0;
         minY = 0;
 
-        Random generator = new Random();
         speed = generator.nextInt(6) + 10;
 
         x = screenX;
