@@ -1,6 +1,7 @@
 package gamecodeschool.com;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Canvas;
@@ -24,19 +25,19 @@ public class TDView extends SurfaceView implements Runnable {
     Thread gameThread = null;
     private Context context;
 
-    //game objects
+    /* game objects */
     private PlayerShip player;
     private EnemyShip enemy1;
     private EnemyShip enemy2;
     private EnemyShip enemy3;
     public ArrayList<SpaceDust> dustList = new ArrayList<SpaceDust>();
 
-    //for drawing
+    /* for drawing */
     private Paint paint;
     private Canvas canvas;
     private SurfaceHolder holder;
 
-    //in-game info (HUD)
+    /* in-game info (HUD) */
     private float distanceRemaining;
     private long timeTaken;
     private long timeStarted;
@@ -44,25 +45,31 @@ public class TDView extends SurfaceView implements Runnable {
     private int screenX;
     private int screenY;
 
-    //in-game sound effects
+    /* in-game sound effects */
     private SoundPool soundPool;
     int start = -1;
     int bump = -1;
     int destroyed = -1;
     int win = -1;
 
+    /* saving and loading data to local files */
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor editor;
+
     public TDView(final Context context , int x , int y) {
         super(context);
         this.context = context;
 
-        //initialize drawing objects
+        /* initialize drawing objects */
         holder = getHolder();
         paint = new Paint();
         screenX = x;
         screenY = y;
 
-        //initializing sounds
-        //this SoundPool is deprecated
+        /*
+        initializing sounds
+        this SoundPool is deprecated
+        */
         soundPool = new SoundPool(10 , AudioManager.STREAM_MUSIC , 0);
 
         try {
@@ -87,6 +94,21 @@ public class TDView extends SurfaceView implements Runnable {
         {
             Log.e("error" , "failed to load sound files") ;
         }
+
+        /*dealing with local files*/
+
+        //get a reference to a file called HiScores
+        //if id doesn't exist create one
+        prefs = context.getSharedPreferences("HiScores",
+            Context.MODE_PRIVATE);
+
+        //initialize the editor ready
+        editor = prefs.edit();
+
+        //load fastest time from an entry in the file
+        //labeled "fastestTime
+        //if not available highScore = 1000000
+        fastestTime = prefs.getLong("fastestTime" , 1000000);
 
         startGame();
     }
@@ -185,13 +207,14 @@ public class TDView extends SurfaceView implements Runnable {
         if (distanceRemaining < 0)
         {
             soundPool.play(win , 1 , 1 , 0 , 0 , 1);
-            //if its the first trial
-            if (fastestTime == 0.0)
-                fastestTime = timeTaken;
 
             //check for new fastest time
-            if (timeTaken < fastestTime)
+            if (timeTaken < fastestTime) {
+                //save highScore
+                editor.putLong("fastestTime" , timeTaken);
+                editor.commit();
                 fastestTime = timeTaken;
+            }
 
             //avoid -ve numbers in the HUD
             distanceRemaining = 0;
@@ -307,7 +330,6 @@ public class TDView extends SurfaceView implements Runnable {
     //start the game and/or restart it whenever the the player dies
     private void startGame()
     {
-
         //initialize game objects
         player = new PlayerShip(context , screenX , screenY);
         enemy1 = new EnemyShip(context , screenX ,screenY);
@@ -317,11 +339,15 @@ public class TDView extends SurfaceView implements Runnable {
         //initialize SpaceDust
         int numSpecs = 500;
 
-        for (int i =0 ; i<numSpecs ; i++ )
+        for (int i = 0 ; i < numSpecs ; i++ )
         {
             //where will the dust spawn?
-            SpaceDust spec = new SpaceDust(screenX , screenY);
-            dustList.add(spec);
+            //avoid adding +500 of dust every time the game restarts
+            if (dustList.size() < 1000)
+            {
+                SpaceDust spec = new SpaceDust(screenX, screenY);
+                dustList.add(spec);
+            }
         }
 
         //reset time and distance
