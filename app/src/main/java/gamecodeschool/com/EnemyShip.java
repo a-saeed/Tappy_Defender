@@ -27,7 +27,7 @@ public class EnemyShip {
     {
         Random generator = new Random();
 
-        //which enemy ship to appear on screen
+        /* which enemy ship to appear on screen */
         int whichBitmap = generator.nextInt(3);
         switch (whichBitmap) {
             case 0:
@@ -41,8 +41,11 @@ public class EnemyShip {
             case 2:
                 bitmap = BitmapFactory.decodeResource(context.getResources() , R.drawable.enemy2);
                 break;
-
         }
+
+        /* scale enemyShips size down on lower screen resolutions */
+        scaleBitmap(screenX);
+
         maxX = screenX;
         maxY = screenY;
         minX = 0;
@@ -57,6 +60,7 @@ public class EnemyShip {
         hitBox = new Rect(x , y , bitmap.getWidth() , bitmap.getHeight());
     }
 
+
     public Bitmap getBitmap() {
         return bitmap;
     }
@@ -65,8 +69,14 @@ public class EnemyShip {
         return x;
     }
 
-    //this is used by the TDView's update method to
-    //make an enemy out of bounds and force a re-spawn
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
+
+    /*
+        this is used by the TDView's update method to
+        make an enemy out of bounds and force a re-spawn
+        */
     public void setX(int x) {this.x = x;}
 
     public int getY() {
@@ -97,5 +107,20 @@ public class EnemyShip {
         hitBox.top = y;
         hitBox.right = x + bitmap.getWidth();
         hitBox.bottom = y + bitmap.getHeight();
+    }
+
+    private void scaleBitmap(int horizontalResolution)
+    {
+        //scale down the size of enemies on lower screen resolutions
+        if (horizontalResolution < 1000){
+            bitmap = Bitmap.createScaledBitmap(bitmap ,
+                    bitmap.getWidth() / 3 ,
+                    bitmap.getHeight() / 3 , false);
+        }
+        else if (horizontalResolution < 1200){
+            bitmap = Bitmap.createScaledBitmap(bitmap ,
+                    bitmap.getWidth() / 2 ,
+                    bitmap.getHeight() / 2 , false);
+        }
     }
 }

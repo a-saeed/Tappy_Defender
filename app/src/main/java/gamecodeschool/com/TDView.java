@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -30,6 +31,8 @@ public class TDView extends SurfaceView implements Runnable {
     private EnemyShip enemy1;
     private EnemyShip enemy2;
     private EnemyShip enemy3;
+    private EnemyShip enemy4;
+    private EnemyShip enemy5;
     public ArrayList<SpaceDust> dustList = new ArrayList<SpaceDust>();
 
     /* for drawing */
@@ -168,14 +171,28 @@ public class TDView extends SurfaceView implements Runnable {
             enemy3.setX(-100);
         }
 
+        if (screenX > 1000){
+            if (Rect.intersects(player.getHitBox() , enemy4.getHitBox())){
+                hitDetected = true;
+                enemy4.setX(-100);
+            }
+        }
+
+        if (screenX > 1200){
+            if (Rect.intersects(player.getHitBox() , enemy5.getHitBox())){
+                hitDetected = true;
+                enemy5.setX(-100);
+            }
+        }
+
         if (hitDetected)
         {
             soundPool.play(bump , 1 , 1 , 0 , 0 , 1);
             player.reduceShieldStrength();
             if (player.shieldStrength < 0) {
                 //game over so do something
+                soundPool.play(destroyed , 1 , 1 , 0 , 0 , 1);
                 gameEnded = true;
-                soundPool.play(destroyed , 10 , 10 , 0 , 0 , 1);
             }
         }
 
@@ -186,6 +203,12 @@ public class TDView extends SurfaceView implements Runnable {
         enemy1.update(player.getSpeed());
         enemy2.update(player.getSpeed());
         enemy3.update(player.getSpeed());
+
+        if (screenX > 1000)
+            enemy4.update(player.getSpeed());
+
+        if (screenX > 1200)
+            enemy5.update(player.getSpeed());
 
         //update the space dust
         for (SpaceDust spec : dustList)
@@ -235,36 +258,39 @@ public class TDView extends SurfaceView implements Runnable {
             //rub out the last frame (clear the screen)
             canvas.drawColor(Color.argb(255 , 20 , 20 , 35));
 
-            //for debugging
-            //draw a rectangle around ships to visualize hit boxes
-            //switch to white pixels
-//            paint.setColor(Color.argb(255 , 255 , 255 , 255));
-//
-//            canvas.drawRect(player.getHitBox().left ,
-//                    player.getHitBox().top ,
-//                    player.getHitBox().right ,
-//                    player.getHitBox().bottom ,
-//                    paint);
-//
-//            canvas.drawRect(enemy1.getHitBox().left ,
-//                    enemy1.getHitBox().top ,
-//                    enemy1.getHitBox().right ,
-//                    enemy1.getHitBox().bottom ,
-//                    paint);
-//
-//            canvas.drawRect(enemy2.getHitBox().left ,
-//                    enemy2.getHitBox().top ,
-//                    enemy2.getHitBox().right ,
-//                    enemy2.getHitBox().bottom ,
-//                    paint);
-//
-//            canvas.drawRect(enemy3.getHitBox().left ,
-//                    enemy3.getHitBox().top ,
-//                    enemy3.getHitBox().right ,
-//                    enemy3.getHitBox().bottom ,
-//                    paint);
+            /*=====================================================================
+            for debugging
+            draw a rectangle around ships to visualize hit boxes
+            switch to white pixels
+            paint.setColor(Color.argb(255 , 255 , 255 , 255));
 
-            //draw white specs of dust
+            canvas.drawRect(player.getHitBox().left ,
+            player.getHitBox().top ,
+            player.getHitBox().right ,
+            player.getHitBox().bottom ,
+            paint);
+
+            canvas.drawRect(enemy1.getHitBox().left ,
+            enemy1.getHitBox().top ,
+            enemy1.getHitBox().right ,
+            enemy1.getHitBox().bottom ,
+            paint);
+
+            canvas.drawRect(enemy2.getHitBox().left ,
+            enemy2.getHitBox().top ,
+            enemy2.getHitBox().right ,
+            enemy2.getHitBox().bottom ,
+            paint);
+
+            canvas.drawRect(enemy3.getHitBox().left ,
+            enemy3.getHitBox().top ,
+            enemy3.getHitBox().right ,
+            enemy3.getHitBox().bottom ,
+            paint);
+            draw white specs of dust
+            ==========================================================================
+            */
+
             for (SpaceDust spec : dustList)
             {
                 canvas.drawPoint(spec.getX() , spec.getY() , paint);
@@ -275,6 +301,12 @@ public class TDView extends SurfaceView implements Runnable {
             canvas.drawBitmap(enemy1.getBitmap() , enemy1.getX() , enemy1.getY() , paint);
             canvas.drawBitmap(enemy2.getBitmap() , enemy2.getX() , enemy2.getY() , paint);
             canvas.drawBitmap(enemy3.getBitmap() , enemy3.getX() , enemy3.getY() , paint);
+
+            if (screenX > 1000)
+                canvas.drawBitmap(enemy4.getBitmap() , enemy4.getX() , enemy4.getY() , paint);
+
+            if (screenX > 1200)
+                canvas.drawBitmap(enemy5.getBitmap() , enemy5.getX() , enemy5.getY() , paint);
 
             //displaying the HUD
             if (! gameEnded)
@@ -328,16 +360,27 @@ public class TDView extends SurfaceView implements Runnable {
     }
 
     //start the game and/or restart it whenever the the player dies
-    private void startGame()
-    {
-        //initialize game objects
-        player = new PlayerShip(context , screenX , screenY);
-        enemy1 = new EnemyShip(context , screenX ,screenY);
-        enemy2 = new EnemyShip(context , screenX ,screenY);
-        enemy3 = new EnemyShip(context , screenX ,screenY);
+    private void startGame() {
+        /* initialize game objects */
+        player = new PlayerShip(context, screenX, screenY);
+        enemy1 = new EnemyShip(context, screenX, screenY);
+        enemy2 = new EnemyShip(context, screenX, screenY);
+        enemy3 = new EnemyShip(context, screenX, screenY);
 
-        //initialize SpaceDust
-        int numSpecs = 500;
+        //scale up the size of two new enemyShips based on given resolution
+        if (screenX > 1000) {
+            enemy4 = new EnemyShip(context, screenX, screenY);
+            enemy4.setBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.enemy3));
+        }
+
+        if (screenX > 1200) {
+            enemy5 = new EnemyShip(context, screenX, screenY);
+            enemy5.setBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.enemy4));
+        }
+
+
+        /* initialize SpaceDust */
+        int numSpecs = 1000;
 
         for (int i = 0 ; i < numSpecs ; i++ )
         {
@@ -350,11 +393,11 @@ public class TDView extends SurfaceView implements Runnable {
             }
         }
 
-        //reset time and distance
+        /* reset time and distance */
         distanceRemaining = 10000; //10km
         timeTaken = 0;
 
-        ///get start time
+        /* get start time */
         timeStarted = System.currentTimeMillis();
 
         gameEnded = false;
