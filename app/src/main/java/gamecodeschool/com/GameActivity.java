@@ -3,6 +3,7 @@ package gamecodeschool.com;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,5 +51,19 @@ public class GameActivity extends AppCompatActivity {
     {
         super.onResume();
         gameView.resume();
+    }
+
+    /*
+   check to see if back button was pressed
+   if presses , quit the app
+   */
+    public boolean onKeyDown(int keyCode , KeyEvent event)
+    {
+        if (keyCode == KeyEvent.KEYCODE_BACK){
+            finish();
+
+            return true;
+        }
+        return false;
     }
 }

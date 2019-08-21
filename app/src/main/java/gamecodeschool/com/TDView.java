@@ -411,8 +411,8 @@ public class TDView extends SurfaceView implements Runnable {
         paint.setColor(Color.argb(255, 255, 255, 255));
         paint.setTextSize(25);
 
-        canvas.drawText("Fastest:" + fastestTime + "s", 10, 20, paint);
-        canvas.drawText("Time:" + timeTaken + "s", screenX / 2, 20, paint);
+        canvas.drawText("Fastest:" + formatTime(fastestTime) + "s", 10, 20, paint);
+        canvas.drawText("Time:" + formatTime(timeTaken) + "s", screenX / 2, 20, paint);
 
         canvas.drawText("Distance:" +
                         distanceRemaining / 1000 + "KM",
@@ -435,10 +435,10 @@ public class TDView extends SurfaceView implements Runnable {
         canvas.drawText("Game over" , screenX / 2 , 100 , paint);
 
         paint.setTextSize(25);
-        canvas.drawText("Fastest:" + fastestTime + "s",
+        canvas.drawText("Fastest:" + formatTime(fastestTime) + "s",
                 screenX / 2 , 160 , paint);
 
-        canvas.drawText("Time:" + timeTaken + "s" ,
+        canvas.drawText("Time:" + formatTime(timeTaken) + "s" ,
                 screenX / 2 , 200 , paint);
 
         canvas.drawText("Distance remaining" + distanceRemaining / 1000 + "KM",
@@ -446,6 +446,20 @@ public class TDView extends SurfaceView implements Runnable {
 
         paint.setTextSize(80);
         canvas.drawText("Tap to replay!" , screenX / 2 , 350 , paint);
+    }
+
+    private  static String formatTime(long time) {
+        long seconds = (time) / 1000;
+        long thousandths =  (time) - (seconds * 1000);
+        String strThousandths = "" + thousandths;
+
+        if (thousandths < 100)
+            strThousandths = "0" + thousandths;
+
+        if (thousandths < 10)
+            strThousandths = "0" + strThousandths;
+
+        return  "" + seconds + "." + strThousandths;
     }
 
 }
